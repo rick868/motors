@@ -1,4 +1,8 @@
-import { users, motorcycles, sales, customers, type User, type InsertUser, type Motorcycle, type InsertMotorcycle, type Sale, type InsertSale, type Customer, type InsertCustomer } from "@shared/schema";
+import { users, motorcycles, motorcycleImages, sales, customers, suppliers, purchaseOrders, purchaseOrderItems, inventoryTransactions, 
+  type User, type InsertUser, type Motorcycle, type InsertMotorcycle, type Sale, type InsertSale, type Customer, type InsertCustomer,
+  type MotorcycleImage, type InsertMotorcycleImage, type Supplier, type InsertSupplier, type PurchaseOrder, type InsertPurchaseOrder,
+  type PurchaseOrderItem, type InsertPurchaseOrderItem, type InventoryTransaction, type InsertInventoryTransaction
+} from "@shared/schema";
 import { db } from "./db";
 import { eq, desc, and, gte, lte } from "drizzle-orm";
 import session from "express-session";
@@ -20,6 +24,26 @@ export interface IStorage {
   updateMotorcycle(id: number, motorcycle: Partial<Motorcycle>): Promise<Motorcycle | undefined>;
   deleteMotorcycle(id: number): Promise<boolean>;
   
+  // Motorcycle Image methods
+  getMotorcycleImages(motorcycleId: number): Promise<MotorcycleImage[]>;
+  createMotorcycleImage(image: InsertMotorcycleImage): Promise<MotorcycleImage>;
+  deleteMotorcycleImage(id: number): Promise<boolean>;
+  
+  // Supplier methods
+  getSuppliers(): Promise<Supplier[]>;
+  getSupplier(id: number): Promise<Supplier | undefined>;
+  createSupplier(supplier: InsertSupplier): Promise<Supplier>;
+  updateSupplier(id: number, supplier: Partial<Supplier>): Promise<Supplier | undefined>;
+  
+  // Purchase Order methods
+  getPurchaseOrders(): Promise<PurchaseOrder[]>;
+  getPurchaseOrder(id: number): Promise<PurchaseOrder | undefined>;
+  createPurchaseOrder(order: InsertPurchaseOrder): Promise<PurchaseOrder>;
+  
+  // Inventory Transaction methods
+  getInventoryTransactions(motorcycleId?: number): Promise<InventoryTransaction[]>;
+  createInventoryTransaction(transaction: InsertInventoryTransaction): Promise<InventoryTransaction>;
+  
   // Customer related methods
   getCustomers(): Promise<Customer[]>;
   getCustomer(id: number): Promise<Customer | undefined>;
@@ -35,11 +59,11 @@ export interface IStorage {
   getTopSellingModels(): Promise<any[]>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 }
 
 export class DatabaseStorage implements IStorage {
-  sessionStore: session.SessionStore;
+  sessionStore: any;
 
   constructor() {
     this.sessionStore = new MemoryStore({
@@ -88,7 +112,7 @@ export class DatabaseStorage implements IStorage {
   async createMotorcycle(insertMotorcycle: InsertMotorcycle): Promise<Motorcycle> {
     const [motorcycle] = await db
       .insert(motorcycles)
-      .values(insertMotorcycle)
+      .values(insertMotorcycle as any)
       .returning();
     return motorcycle;
   }
@@ -107,6 +131,111 @@ export class DatabaseStorage implements IStorage {
       .delete(motorcycles)
       .where(eq(motorcycles.id, id));
     return true;
+  }
+
+  // Motorcycle Image methods
+  async getMotorcycleImages(motorcycleId: number): Promise<MotorcycleImage[]> {
+    return await db
+      .select()
+      .from(motorcycleImages)
+      .where(eq(motorcycleImages.motorcycleId, motorcycleId))
+      .orderBy(motorcycleImages.displayOrder);
+  }
+
+  async createMotorcycleImage(image: InsertMotorcycleImage): Promise<MotorcycleImage> {
+    const [motorcycleImage] = await db
+      .insert(motorcycleImages)
+      .values(image)
+      .returning();
+    return motorcycleImage;
+  }
+
+  async deleteMotorcycleImage(id: number): Promise<boolean> {
+    await db
+      .delete(motorcycleImages)
+      .where(eq(motorcycleImages.id, id));
+    return true;
+  }
+
+  // Supplier methods
+  async getSuppliers(): Promise<Supplier[]> {
+    return await db
+      .select()
+      .from(suppliers)
+      .orderBy(suppliers.name);
+  }
+
+  async getSupplier(id: number): Promise<Supplier | undefined> {
+    const [supplier] = await db
+      .select()
+      .from(suppliers)
+      .where(eq(suppliers.id, id));
+    return supplier;
+  }
+
+  async createSupplier(supplier: InsertSupplier): Promise<Supplier> {
+    const [newSupplier] = await db
+      .insert(suppliers)
+      .values(supplier)
+      .returning();
+    return newSupplier;
+  }
+
+  async updateSupplier(id: number, supplierData: Partial<Supplier>): Promise<Supplier | undefined> {
+    const [updatedSupplier] = await db
+      .update(suppliers)
+      .set(supplierData)
+      .where(eq(suppliers.id, id))
+      .returning();
+    return updatedSupplier;
+  }
+
+  // Purchase Order methods
+  async getPurchaseOrders(): Promise<PurchaseOrder[]> {
+    return await db
+      .select()
+      .from(purchaseOrders)
+      .orderBy(desc(purchaseOrders.orderDate));
+  }
+
+  async getPurchaseOrder(id: number): Promise<PurchaseOrder | undefined> {
+    const [order] = await db
+      .select()
+      .from(purchaseOrders)
+      .where(eq(purchaseOrders.id, id));
+    return order;
+  }
+
+  async createPurchaseOrder(order: InsertPurchaseOrder): Promise<PurchaseOrder> {
+    const [newOrder] = await db
+      .insert(purchaseOrders)
+      .values(order)
+      .returning();
+    return newOrder;
+  }
+
+  // Inventory Transaction methods
+  async getInventoryTransactions(motorcycleId?: number): Promise<InventoryTransaction[]> {
+    if (motorcycleId) {
+      return await db
+        .select()
+        .from(inventoryTransactions)
+        .where(eq(inventoryTransactions.motorcycleId, motorcycleId))
+        .orderBy(desc(inventoryTransactions.transactionDate));
+    }
+    
+    return await db
+      .select()
+      .from(inventoryTransactions)
+      .orderBy(desc(inventoryTransactions.transactionDate));
+  }
+
+  async createInventoryTransaction(transaction: InsertInventoryTransaction): Promise<InventoryTransaction> {
+    const [newTransaction] = await db
+      .insert(inventoryTransactions)
+      .values(transaction)
+      .returning();
+    return newTransaction;
   }
 
   // Customer related methods
@@ -180,20 +309,27 @@ export class DatabaseStorage implements IStorage {
     // For now, we'll return a simplified approach
     const result = await db.query.motorcycles.findMany({
       with: {
-        sales: true
+        sales: true,
+        images: true
       }
     });
     
     // Calculate total sales per model and sort
-    const models = result.map(model => ({
-      id: model.id,
-      model: model.model,
-      make: model.make,
-      price: model.price,
-      imageUrl: model.imageUrl,
-      unitsSold: model.sales.length,
-      totalSales: model.sales.reduce((acc, sale) => acc + Number(sale.salePrice), 0)
-    }));
+    const models = result.map(model => {
+      // Find the primary image or the first image
+      const primaryImage = model.images.find(img => img.isPrimary) || model.images[0];
+      const imageUrl = primaryImage?.imageUrl || null;
+      
+      return {
+        id: model.id,
+        model: model.model,
+        make: model.make,
+        price: model.price,
+        imageUrl: imageUrl,
+        unitsSold: model.sales.length,
+        totalSales: model.sales.reduce((acc, sale) => acc + Number(sale.salePrice), 0)
+      };
+    });
     
     // Sort by units sold descending
     return models.sort((a, b) => b.unitsSold - a.unitsSold);
