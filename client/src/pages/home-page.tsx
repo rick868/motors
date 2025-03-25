@@ -1,6 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { ChevronRight, Loader2 } from "lucide-react";
+import inventoryImage from "/attached_assets/thmb-1100-inventory-management-1024x633.webp";
+import dashboardImage from "/dashboard-preview.jpg";
+import salesImage from "/sales-overview.jpg";
 
 export default function HomePage() {
   const [_, navigate] = useLocation();
@@ -13,11 +16,6 @@ export default function HomePage() {
     navigate("/auth");
   };
 
-  const contextImages = {
-    inventory: "/attached_assets/thmb-1100-inventory-management-1024x633.webp",
-    dashboard: "/dashboard-preview.jpg",
-    sales: "/sales-overview.jpg"
-  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -63,7 +61,7 @@ export default function HomePage() {
                 title="Advanced Analytics"
                 description="Comprehensive analytics dashboard with real-time KPIs and visualizations to track dealership performance."
                 bgColor="bg-[#1a4b8c]"
-                image={contextImages.dashboard}
+                image={dashboardImage}
               />
 
               <FeatureCard
@@ -75,7 +73,7 @@ export default function HomePage() {
                 title="Inventory Management"
                 description="Effortlessly track motorcycle inventory, parts, and accessories with automated stock alerts."
                 bgColor="bg-[#d32f2f]"
-                image={contextImages.inventory}
+                image={inventoryImage}
               />
 
               <FeatureCard
@@ -87,7 +85,7 @@ export default function HomePage() {
                 title="Predictive Analytics"
                 description="Utilize ARIMA and Prophet models to forecast sales trends and optimize inventory purchasing."
                 bgColor="bg-[#1a4b8c]"
-                image={contextImages.sales}
+                image={salesImage}
               />
             </div>
           </div>
@@ -105,7 +103,7 @@ export default function HomePage() {
                   <p>Our advanced analytics engine processes historical data to identify patterns and predict future trends, helping you make informed business decisions.</p>
                 </div>
                 <div className="md:w-1/2 bg-white p-4 rounded-lg shadow-md">
-                  <img src={contextImages.dashboard} alt="Dashboard analytics visualization" className="w-full h-48 object-cover rounded-lg"/>
+                  <img src={dashboardImage} alt="Dashboard analytics visualization" className="w-full h-48 object-cover rounded-lg"/>
                 </div>
               </div>
 
@@ -116,7 +114,7 @@ export default function HomePage() {
                   <p>Administrators have complete system control, while sales managers focus on daily operations, inventory, and customer management.</p>
                 </div>
                 <div className="md:w-1/2 bg-white p-4 rounded-lg shadow-md">
-                  <img src={contextImages.dashboard} alt="Team collaboration with role-based access" className="w-full h-48 object-cover rounded-lg"/>
+                  <img src={dashboardImage} alt="Team collaboration with role-based access" className="w-full h-48 object-cover rounded-lg"/>
                 </div>
               </div>
             </div>
@@ -173,7 +171,7 @@ type FeatureCardProps = {
   title: string;
   description: string;
   bgColor: string;
-  image: string;
+  image: string | any; //Updated to accept any type for image prop
 };
 
 function FeatureCard({ icon, title, description, bgColor, image }: FeatureCardProps) {
