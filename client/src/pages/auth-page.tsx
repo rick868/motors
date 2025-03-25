@@ -127,7 +127,19 @@ export default function AuthPage() {
     // Remove confirmPassword field as it's not part of the API schema
     const { confirmPassword, ...registrationData } = values;
     
-    registerMutation.mutate(registrationData, {
+    // Ensure email is included and not empty
+    if (!registrationData.email) {
+      registerForm.setError("email", {
+        type: "manual",
+        message: "Email is required"
+      });
+      return;
+    }
+    
+    // Debug log
+    console.log("Submitting registration data:", registrationData);
+    
+    registerMutation.mutate(registrationData as any, {
       onSuccess: () => {
         navigate("/dashboard");
       }
@@ -160,7 +172,12 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter your username" {...field} />
+                          <Input 
+                            placeholder="Enter your username" 
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -174,7 +191,13 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -230,7 +253,12 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>First Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="John" {...field} />
+                            <Input 
+                              placeholder="John" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                              value={field.value || ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -244,7 +272,12 @@ export default function AuthPage() {
                         <FormItem>
                           <FormLabel>Last Name</FormLabel>
                           <FormControl>
-                            <Input placeholder="Doe" {...field} />
+                            <Input 
+                              placeholder="Doe" 
+                              {...field} 
+                              onChange={(e) => field.onChange(e.target.value)}
+                              value={field.value || ""}
+                            />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -279,7 +312,12 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Username</FormLabel>
                         <FormControl>
-                          <Input placeholder="johndoe" {...field} />
+                          <Input 
+                            placeholder="johndoe" 
+                            {...field} 
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -293,7 +331,13 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -307,7 +351,13 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input type="password" placeholder="••••••••" {...field} />
+                          <Input 
+                            type="password" 
+                            placeholder="••••••••" 
+                            {...field}
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
