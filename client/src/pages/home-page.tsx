@@ -2,18 +2,23 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { ChevronRight, Loader2 } from "lucide-react";
 
-// Remove direct use of useAuth here
 export default function HomePage() {
   const [_, navigate] = useLocation();
-  
+
   const handleLogin = () => {
     navigate("/auth");
   };
-  
+
   const handleRegister = () => {
     navigate("/auth");
   };
-  
+
+  const contextImages = {
+    inventory: "/attached_assets/thmb-1100-inventory-management-1024x633.webp",
+    dashboard: "/dashboard-preview.jpg",
+    sales: "/sales-overview.jpg"
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       <header className="bg-white shadow-md">
@@ -29,7 +34,7 @@ export default function HomePage() {
           </div>
         </div>
       </header>
-      
+
       <main>
         {/* Hero Section */}
         <section className="bg-gradient-to-r from-[#1a4b8c] to-[#d32f2f] text-white py-20">
@@ -43,7 +48,7 @@ export default function HomePage() {
             </Button>
           </div>
         </section>
-        
+
         {/* Features Section */}
         <section id="features" className="py-16 bg-white">
           <div className="container mx-auto px-4">
@@ -58,8 +63,9 @@ export default function HomePage() {
                 title="Advanced Analytics"
                 description="Comprehensive analytics dashboard with real-time KPIs and visualizations to track dealership performance."
                 bgColor="bg-[#1a4b8c]"
+                image={contextImages.dashboard}
               />
-              
+
               <FeatureCard
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
@@ -69,8 +75,9 @@ export default function HomePage() {
                 title="Inventory Management"
                 description="Effortlessly track motorcycle inventory, parts, and accessories with automated stock alerts."
                 bgColor="bg-[#d32f2f]"
+                image={contextImages.inventory}
               />
-              
+
               <FeatureCard
                 icon={
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-8 h-8">
@@ -80,11 +87,12 @@ export default function HomePage() {
                 title="Predictive Analytics"
                 description="Utilize ARIMA and Prophet models to forecast sales trends and optimize inventory purchasing."
                 bgColor="bg-[#1a4b8c]"
+                image={contextImages.sales}
               />
             </div>
           </div>
         </section>
-        
+
         {/* How It Works Section */}
         <section className="py-16 bg-gray-50">
           <div className="container mx-auto px-4">
@@ -97,12 +105,10 @@ export default function HomePage() {
                   <p>Our advanced analytics engine processes historical data to identify patterns and predict future trends, helping you make informed business decisions.</p>
                 </div>
                 <div className="md:w-1/2 bg-white p-4 rounded-lg shadow-md">
-                  <div className="rounded-lg bg-gray-200 h-48 w-full flex items-center justify-center text-gray-400">
-                    Dashboard analytics visualization
-                  </div>
+                  <img src={contextImages.dashboard} alt="Dashboard analytics visualization" className="w-full h-48 object-cover rounded-lg"/>
                 </div>
               </div>
-              
+
               <div className="flex flex-col md:flex-row-reverse items-center">
                 <div className="md:w-1/2 mb-6 md:mb-0 md:pl-8">
                   <h3 className="font-semibold text-2xl mb-4">Role-Based Access Control</h3>
@@ -110,15 +116,13 @@ export default function HomePage() {
                   <p>Administrators have complete system control, while sales managers focus on daily operations, inventory, and customer management.</p>
                 </div>
                 <div className="md:w-1/2 bg-white p-4 rounded-lg shadow-md">
-                  <div className="rounded-lg bg-gray-200 h-48 w-full flex items-center justify-center text-gray-400">
-                    Team collaboration with role-based access
-                  </div>
+                  <img src={contextImages.dashboard} alt="Team collaboration with role-based access" className="w-full h-48 object-cover rounded-lg"/>
                 </div>
               </div>
             </div>
           </div>
         </section>
-        
+
         {/* Contact Section */}
         <section className="py-16 bg-white">
           <div className="container mx-auto px-4">
@@ -130,13 +134,13 @@ export default function HomePage() {
                 <p className="mb-1"><strong>Email:</strong> admin@voyagermoto.com</p>
                 <p><strong>Phone:</strong> (555) 123-4567</p>
               </div>
-              
+
               <div className="mb-6">
                 <h3 className="font-semibold text-xl mb-3">Technical Support</h3>
                 <p className="mb-1"><strong>Email:</strong> support@voyagermoto.com</p>
                 <p><strong>Hours:</strong> Monday - Friday, 9AM - 5PM EST</p>
               </div>
-              
+
               <div>
                 <h3 className="font-semibold text-xl mb-3">Emergency Contact</h3>
                 <p className="mb-1"><strong>After-hours Support:</strong> (555) 987-6543</p>
@@ -146,7 +150,7 @@ export default function HomePage() {
           </div>
         </section>
       </main>
-      
+
       <footer className="bg-[#1a4b8c] text-white py-8">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row justify-between items-center">
@@ -169,11 +173,13 @@ type FeatureCardProps = {
   title: string;
   description: string;
   bgColor: string;
+  image: string;
 };
 
-function FeatureCard({ icon, title, description, bgColor }: FeatureCardProps) {
+function FeatureCard({ icon, title, description, bgColor, image }: FeatureCardProps) {
   return (
     <div className="bg-gray-50 p-6 rounded-lg shadow-sm">
+      <img src={image} alt={title} className="w-full h-48 object-cover rounded-t-lg mb-4"/>
       <div className={`w-16 h-16 ${bgColor} rounded-full flex items-center justify-center text-white mb-4 mx-auto`}>
         {icon}
       </div>
