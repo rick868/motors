@@ -26,6 +26,7 @@ import {
 } from "recharts";
 import ArimaModel from "@/components/prediction/arima-model";
 import ProphetModel from "@/components/prediction/prophet-model";
+import ModelComparison from "@/components/prediction/model-comparison";
 
 // Sample inventory prediction data
 const inventoryPredictionData = [
@@ -113,6 +114,7 @@ export default function PredictionPage() {
             <TabsList>
               <TabsTrigger value="prediction">Sales Prediction</TabsTrigger>
               <TabsTrigger value="models">Prediction Models</TabsTrigger>
+              <TabsTrigger value="comparison">Model Comparison</TabsTrigger>
               <TabsTrigger value="seasonal">Seasonal Analysis</TabsTrigger>
               <TabsTrigger value="inventory">Inventory Forecast</TabsTrigger>
             </TabsList>
@@ -238,6 +240,17 @@ export default function PredictionPage() {
               <div className="grid grid-cols-1 gap-6">
                 <ArimaModel />
                 <ProphetModel />
+              </div>
+            </TabsContent>
+            
+            <TabsContent value="comparison" className="space-y-4">
+              <div className="mb-4">
+                <p className="text-sm text-muted-foreground">
+                  Use this powerful tool to directly compare different prediction models and determine which one performs best for your specific business needs.
+                </p>
+              </div>
+              <div>
+                <ModelComparison />
               </div>
             </TabsContent>
             
