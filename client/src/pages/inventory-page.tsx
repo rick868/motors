@@ -67,12 +67,14 @@ export default function InventoryPage() {
   });
   const [currentTab, setCurrentTab] = useState("basic");
   const [featureInput, setFeatureInput] = useState("");
-  
+  const [selectedMotorcycleId, setSelectedMotorcycleId] = useState<string | null>(null);
+  const [detailDialogOpen, setDetailDialogOpen] = useState(false);
+
   // Get inventory data
   const { data: inventory, isLoading, isError } = useQuery<Motorcycle[]>({
     queryKey: ["/api/motorcycles"],
   });
-  
+
   // Add new motorcycle mutation
   const createMotorcycleMutation = useMutation({
     mutationFn: async (motorcycle: any) => {
@@ -96,7 +98,7 @@ export default function InventoryPage() {
       });
     },
   });
-  
+
   const resetNewMotorcycleForm = () => {
     setNewMotorcycle({
       model: "",
@@ -128,20 +130,20 @@ export default function InventoryPage() {
     });
     setCurrentTab("basic");
   };
-  
+
   const filteredInventory = inventory?.filter(item => {
     const matchesSearch = searchTerm === "" || 
       item.model.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.make.toLowerCase().includes(searchTerm.toLowerCase()) ||
       item.vin.toLowerCase().includes(searchTerm.toLowerCase()) ||
       (item.sku && item.sku.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+
     const matchesCategory = categoryFilter === "" || item.category === categoryFilter;
     const matchesStatus = statusFilter === "" || item.status === statusFilter;
-    
+
     return matchesSearch && matchesCategory && matchesStatus;
   });
-  
+
   // Status badge display based on status
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -157,14 +159,14 @@ export default function InventoryPage() {
         return <Badge>Unknown</Badge>;
     }
   };
-  
+
   // Form input handlers
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value, type } = e.target;
-    
+
     // Convert to appropriate type
     const processedValue = type === 'number' ? (value ? parseFloat(value) : 0) : value;
-    
+
     // Generate SKU when model, make, or year changes
     if (name === "model" || name === "make" || name === "year") {
       const updatedValues = { ...newMotorcycle, [name]: processedValue };
@@ -176,11 +178,11 @@ export default function InventoryPage() {
       setNewMotorcycle(prev => ({ ...prev, [name]: processedValue }));
     }
   };
-  
+
   const handleSelectChange = (name: string, value: string) => {
     setNewMotorcycle(prev => ({ ...prev, [name]: value }));
   };
-  
+
   const addFeature = () => {
     if (featureInput.trim()) {
       setNewMotorcycle(prev => ({ 
@@ -190,18 +192,18 @@ export default function InventoryPage() {
       setFeatureInput("");
     }
   };
-  
+
   const removeFeature = (index: number) => {
     setNewMotorcycle(prev => ({
       ...prev,
       features: (prev.features as string[]).filter((_, i) => i !== index)
     }));
   };
-  
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
-  
+
   const handleAddItem = () => {
     // Validate form
     if (!newMotorcycle.model || !newMotorcycle.make || !newMotorcycle.vin || !newMotorcycle.category) {
@@ -212,13 +214,13 @@ export default function InventoryPage() {
       });
       return;
     }
-    
+
     // Submit form
     createMotorcycleMutation.mutate(newMotorcycle);
   };
-  
+
   const uniqueCategories = [...new Set((inventory || []).map(item => item.category))];
-  
+
   // Form tabs for organizing the complex motorcycle entry form
   const renderAddMotorcycleForm = () => (
     <Tabs value={currentTab} onValueChange={setCurrentTab} className="w-full">
@@ -228,7 +230,7 @@ export default function InventoryPage() {
         <TabsTrigger value="details">Details</TabsTrigger>
         <TabsTrigger value="inventory">Inventory</TabsTrigger>
       </TabsList>
-      
+
       <TabsContent value="basic" className="space-y-4">
         <div className="grid gap-2">
           <Label htmlFor="model">Model*</Label>
@@ -347,7 +349,7 @@ export default function InventoryPage() {
           />
         </div>
       </TabsContent>
-      
+
       <TabsContent value="specs" className="space-y-4">
         <div className="grid grid-cols-2 gap-4">
           <div className="grid gap-2">
@@ -444,7 +446,7 @@ export default function InventoryPage() {
           </div>
         </div>
       </TabsContent>
-      
+
       <TabsContent value="details" className="space-y-4">
         <div className="grid gap-2">
           <Label htmlFor="description">Description</Label>
@@ -506,7 +508,7 @@ export default function InventoryPage() {
           />
         </div>
       </TabsContent>
-      
+
       <TabsContent value="inventory" className="space-y-4">
         <div className="grid grid-cols-3 gap-4">
           <div className="grid gap-2">
@@ -598,20 +600,20 @@ export default function InventoryPage() {
       </TabsContent>
     </Tabs>
   );
-  
+
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <Sidebar />
-      
+
       <div className="flex-1 flex flex-col overflow-hidden pt-16 lg:pt-0 lg:pl-64">
         <TopNav title="Inventory Management" />
-        
+
         <main className="flex-1 overflow-y-auto p-6">
           <Card>
             <CardHeader className="pb-3">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                 <CardTitle>Motorcycle Inventory</CardTitle>
-                
+
                 <div className="flex flex-col md:flex-row gap-4">
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
@@ -622,7 +624,7 @@ export default function InventoryPage() {
                       onChange={handleSearch}
                     />
                   </div>
-                  
+
                   <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
                     <DialogTrigger asChild>
                       <Button className="bg-[#1a4b8c]">
@@ -636,7 +638,7 @@ export default function InventoryPage() {
                       </DialogHeader>
                       <div className="grid gap-4 py-4">
                         {renderAddMotorcycleForm()}
-                        
+
                         <div className="flex justify-between items-center mt-6">
                           <div className="flex items-center text-sm text-gray-500">
                             <Info className="h-4 w-4 mr-1" />
@@ -667,14 +669,14 @@ export default function InventoryPage() {
                 </div>
               </div>
             </CardHeader>
-            
+
             <CardContent>
               <div className="flex flex-col md:flex-row gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <Filter className="h-4 w-4 text-gray-500" />
                   <span className="text-sm font-medium">Filter:</span>
                 </div>
-                
+
                 <div className="grid grid-cols-2 md:flex gap-4">
                   <Select value={categoryFilter} onValueChange={setCategoryFilter}>
                     <SelectTrigger className="w-[180px]">
@@ -687,7 +689,7 @@ export default function InventoryPage() {
                       ))}
                     </SelectContent>
                   </Select>
-                  
+
                   <Select value={statusFilter} onValueChange={setStatusFilter}>
                     <SelectTrigger className="w-[180px]">
                       <SelectValue placeholder="All Statuses" />
@@ -700,14 +702,14 @@ export default function InventoryPage() {
                       <SelectItem value="discontinued">Discontinued</SelectItem>
                     </SelectContent>
                   </Select>
-                  
+
                   <Button variant="outline" className="md:ml-auto">
                     <DownloadCloud className="h-4 w-4 mr-2" />
                     Export
                   </Button>
                 </div>
               </div>
-              
+
               {isLoading ? (
                 <div className="flex items-center justify-center h-64">
                   <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
@@ -745,7 +747,7 @@ export default function InventoryPage() {
                         </TableRow>
                       ) : (
                         filteredInventory?.map((item) => (
-                          <TableRow key={item.id}>
+                          <TableRow key={item.id} onClick={() => {setSelectedMotorcycleId(item.id); setDetailDialogOpen(true);}}>
                             <TableCell className="font-medium">{item.model}</TableCell>
                             <TableCell>{item.make}</TableCell>
                             <TableCell>{item.year}</TableCell>
@@ -782,6 +784,11 @@ export default function InventoryPage() {
                   </Table>
                 </div>
               )}
+              <MotorcycleDetailDialog
+                open={detailDialogOpen}
+                onOpenChange={setDetailDialogOpen}
+                motorcycleId={selectedMotorcycleId}
+              />
             </CardContent>
           </Card>
         </main>
