@@ -259,7 +259,13 @@ export default function AuthPage() {
                       <FormItem>
                         <FormLabel>Email Address</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder="john.doe@example.com" {...field} />
+                          <Input 
+                            type="email" 
+                            placeholder="john.doe@example.com" 
+                            {...field} 
+                            onChange={(e) => field.onChange(e.target.value)}
+                            value={field.value || ""}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
