@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Plus, Search, Filter, DownloadCloud, Camera, Sliders, Info, Tag, UploadCloud, Clipboard, PlusCircle } from "lucide-react";
+import { Loader2, Plus, Search, Filter, DownloadCloud, Camera, Sliders, Info, Tag, UploadCloud, Clipboard, PlusCircle, Eye } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -18,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { Motorcycle } from "@shared/schema";
+import MotorcycleDetailDialog from "@/components/inventory/motorcycle-detail-dialog";
 
 // Generate random SKU code
 const generateSKU = (make: string, model: string, year: number) => {
