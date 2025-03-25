@@ -23,11 +23,11 @@ type SalesChartProps = {
 
 export default function SalesChart({ data }: SalesChartProps) {
   const [timeframe, setTimeframe] = useState<'month' | 'quarter' | 'year'>('month');
-  
+
   const handleTimeframeChange = (newTimeframe: 'month' | 'quarter' | 'year') => {
     setTimeframe(newTimeframe);
   };
-  
+
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -36,7 +36,7 @@ export default function SalesChart({ data }: SalesChartProps) {
       maximumFractionDigits: 0,
     }).format(value);
   };
-  
+
   const CustomTooltip = ({ active, payload, label }: TooltipProps<number, string>) => {
     if (active && payload && payload.length) {
       return (
@@ -48,10 +48,10 @@ export default function SalesChart({ data }: SalesChartProps) {
         </div>
       );
     }
-    
+
     return null;
   };
-  
+
   return (
     <Card>
       <CardContent className="p-6">
@@ -84,7 +84,7 @@ export default function SalesChart({ data }: SalesChartProps) {
             </Button>
           </div>
         </div>
-        
+
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart
@@ -106,10 +106,8 @@ export default function SalesChart({ data }: SalesChartProps) {
               <Tooltip content={<CustomTooltip />} />
               <Bar 
                 dataKey="sales" 
-                fill="#1a4b8c" 
                 barSize={30}
                 radius={[4, 4, 0, 0]}
-                // Switch to red for recent months
                 fill={(entry, index) => index > 5 ? "#d32f2f" : "#1a4b8c"}
               />
             </BarChart>
