@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { ChevronRight, Loader2 } from "lucide-react";
-import inventoryImage from "../../attached_assets/thmb-1100-inventory-management-1024x633.webp";
+import inventoryImage from "/attached_assets/thmb-1100-inventory-management-1024x633.webp";
 import dashboardImage from "/dashboard-preview.jpg";
 import salesImage from "/sales-overview.jpg";
 
