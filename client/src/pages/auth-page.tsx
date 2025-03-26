@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -34,7 +34,8 @@ const registerSchema = insertUserSchema.extend({
   lastName: z.string().min(2, "Last name is required").optional(),
   email: z.string().email("Invalid email address"),
   role: z.enum(["sales_manager", "admin"]),
-}).refine(data => data.password === data.confirmPassword, {
+})
+.refine(data => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
 });
@@ -102,19 +103,20 @@ export default function AuthPage() {
   });
   
   // Register form
-  const registerForm = useForm<RegisterFormValues>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      username: "",
-      password: "",
-      confirmPassword: "",
-      firstName: "",
-      lastName: "",
-      email: "",
-      role: "sales_manager",
-    },
-  });
   
+    const registerForm = useForm<RegisterFormValues>({
+      resolver: zodResolver(registerSchema),
+      defaultValues: {
+        username: "",
+        password: "",
+        confirmPassword: "",
+        firstName: "",
+        lastName: "",
+        email: "",
+        role: "sales_manager",
+      },
+    });
+
   const onLoginSubmit = (values: LoginFormValues) => {
     loginMutation.mutate(values, {
       onSuccess: () => {
@@ -126,6 +128,7 @@ export default function AuthPage() {
   const onRegisterSubmit = (values: RegisterFormValues) => {
     // Remove confirmPassword field as it's not part of the API schema
     const { confirmPassword, ...registrationData } = values;
+    console.log("Form State:", registerForm.watch());
     
     // Ensure email is included and not empty
     if (!registrationData.email) {
@@ -175,8 +178,8 @@ export default function AuthPage() {
                           <Input 
                             placeholder="Enter your username" 
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -195,8 +198,8 @@ export default function AuthPage() {
                             type="password" 
                             placeholder="••••••••" 
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -256,8 +259,8 @@ export default function AuthPage() {
                             <Input 
                               placeholder="John" 
                               {...field} 
-                              onChange={(e) => field.onChange(e.target.value)}
-                              value={field.value || ""}
+                              value={field.value}
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <FormMessage />
@@ -275,8 +278,8 @@ export default function AuthPage() {
                             <Input 
                               placeholder="Doe" 
                               {...field} 
-                              onChange={(e) => field.onChange(e.target.value)}
-                              value={field.value || ""}
+                              value={field.value}
+                              onChange={field.onChange}
                             />
                           </FormControl>
                           <FormMessage />
@@ -288,21 +291,30 @@ export default function AuthPage() {
                   <FormField
                     control={registerForm.control}
                     name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel>Email Address</FormLabel>
-                        <FormControl>
-                          <Input 
-                            type="email" 
-                            placeholder="john.doe@example.com" 
-                            {...field} 
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
+                    render={({ field }) => {
+                        console.log("Email Field Render Value:", field.value);
+                        console.log("Form Errors:", registerForm.formState.errors);
+                        console.log("Form State:", registerForm.formState);
+                      return(
+                            <FormItem>
+                                <FormLabel>Email Address</FormLabel>
+                                <FormControl>
+                                    <Input
+                                        type="email"
+                                        placeholder="john.doe@example.com"
+                                        {...field}
+                                        value={field.value}
+                                        onChange={(e) => {
+                                            console.log("Email Input Changed:", e.target.value);
+                                            field.onChange(e.target.value);
+                                            registerForm.setValue("email", e.target.value);
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        );
+                    }}
                   />
                   
                   <FormField
@@ -315,8 +327,8 @@ export default function AuthPage() {
                           <Input 
                             placeholder="johndoe" 
                             {...field} 
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -335,8 +347,8 @@ export default function AuthPage() {
                             type="password" 
                             placeholder="••••••••" 
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />
@@ -355,8 +367,8 @@ export default function AuthPage() {
                             type="password" 
                             placeholder="••••••••" 
                             {...field}
-                            onChange={(e) => field.onChange(e.target.value)}
-                            value={field.value || ""}
+                            value={field.value}
+                            onChange={field.onChange}
                           />
                         </FormControl>
                         <FormMessage />

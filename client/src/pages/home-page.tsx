@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "wouter";
 import { ChevronRight, Loader2 } from "lucide-react";
-import inventoryImage from "/attached_assets/thmb-1100-inventory-management-1024x633.webp";
-import dashboardImage from "/dashboard-preview.jpg";
-import salesImage from "/sales-overview.jpg";
+import inventoryImage from "../attached_assets/thmb-1100-inventory-management-1024x633.webp";
+import dashboardImage from "../attached_assets/dashboardpreview.png";
+import salesImage from "../attached_assets/salesoverview.png";
 
 export default function HomePage() {
   const [_, navigate] = useLocation();
